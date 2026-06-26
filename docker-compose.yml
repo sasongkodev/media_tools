@@ -1,0 +1,27 @@
+# ═══════════════════════════════════════════
+# Media Tools — Docker Compose
+# Run: docker compose up --build
+# ═══════════════════════════════════════════
+
+services:
+  media-tools:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: media-tools
+    ports:
+      - "5000:5000"
+    volumes:
+      # Persist downloaded files on host
+      - ./downloads:/app/downloads
+    environment:
+      - PORT=5000
+      - FLASK_DEBUG=0
+      - DOWNLOAD_DIR=/app/downloads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

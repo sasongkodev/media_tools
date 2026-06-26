@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Tools — Universal Video Downloader</title>
+    <meta name="description" content="Download videos from 1000+ websites.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+            </div>
+            <span class="nav-title">Media Tools</span>
+            <span class="nav-badge">v2.1</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link active" data-tab="downloader" onclick="switchTab('downloader')">Download</a>
+            <a href="#" class="nav-link" data-tab="library" onclick="switchTab('library')">Library</a>
+        </div>
+        <div class="nav-status">
+            <div class="status-dot {{ 'active' if ffmpeg_available else 'inactive' }}"></div>
+            <span>ffmpeg {{ '✓' if ffmpeg_available else '✗' }}</span>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section id="downloader-tab" class="tab-content active">
+            <div class="hero">
+                <div class="hero-badge">⚡ Powered by yt-dlp — 1000+ sites</div>
+                <h1 class="hero-title">Download Videos <span class="gradient-text">From Anywhere</span></h1>
+                <p class="hero-subtitle">Paste any video URL — YouTube, TikTok, Instagram, Twitter, and hundreds more.</p>
+            </div>
+
+            <div class="download-card" id="download-card">
+                <div class="card-glow"></div>
+                <form id="download-form" onsubmit="return handleDownload(event)">
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <input type="url" id="url-input" placeholder="Paste video URL here..." autocomplete="off" required>
+                            <button type="button" class="btn-paste" onclick="pasteFromClipboard()" title="Paste">📋</button>
+                        </div>
+                        <div class="input-actions">
+                            <select id="quality-select" class="quality-select">
+                                {% for key, label in quality_options.items() %}
+                                <option value="{{ key }}" {{ 'selected' if key == 'best' else '' }}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn-download" id="btn-download">
+                                <span>⬇ Download</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div id="video-preview" class="video-preview hidden">
+                    <img id="preview-thumb" class="preview-thumb" src="" alt="">
+                    <div class="preview-info">
+                        <h3 id="preview-title"></h3>
+                        <p id="preview-uploader"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sites-grid">
+                <div class="site-chip">▶ YouTube</div>
+                <div class="site-chip">♪ TikTok</div>
+                <div class="site-chip">📷 Instagram</div>
+                <div class="site-chip">𝕏 Twitter/X</div>
+                <div class="site-chip">f Facebook</div>
+                <div class="site-chip">▶ Vimeo</div>
+                <div class="site-chip">📺 Twitch</div>
+                <div class="site-chip site-chip-more">+ 1000 more</div>
+            </div>
+
+            <div id="tasks-section" class="tasks-section hidden">
+                <div class="section-header">
+                    <h2>Active Downloads</h2>
+                    <span class="task-count" id="task-count">0</span>
+                </div>
+                <div id="tasks-list" class="tasks-list"></div>
+            </div>
+        </section>
+
+        <section id="library-tab" class="tab-content">
+            <div class="section-header">
+                <h2>Downloaded Files</h2>
+                <button class="btn-refresh" onclick="loadFiles()">🔄 Refresh</button>
+            </div>
+            <div id="files-list" class="files-list">
+                <div class="empty-state"><p>No files yet. Download some videos first!</p></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast-container" class="toast-container"></div>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
